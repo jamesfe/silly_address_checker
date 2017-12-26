@@ -1,2 +1,5 @@
 *.o
 bitcoin-tool
+
+output/
+tmp/
