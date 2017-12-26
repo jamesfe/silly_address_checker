@@ -10,11 +10,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if OS_FAMILY == Windows
-#include <malloc.h>
-#else
 #include <alloca.h>
-#endif
 
 #include <openssl/bn.h>
 
