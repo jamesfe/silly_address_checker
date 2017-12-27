@@ -5,6 +5,8 @@ from datetime import datetime
 import re
 import time
 
+output_prefix = '10k_addresses_'
+
 
 def slow_get(url):
     time.sleep(0.2)
@@ -29,7 +31,10 @@ def get_address_info(setup):
 
     trans_dates = sorted([_[0] for _ in transactions])
     most_recent_date = datetime.fromtimestamp(trans_dates[-1])
-    print('{} transactions, most recent date: {} for user {}'.format(len(trans_dates), most_recent_date, setup[1]))
+    with open('./output/{}_address_info.csv'.format(output_prefix), 'a') as outfile:
+        message = '{},{},"{}"\n'.format(len(trans_dates), most_recent_date, setup[1])
+        outfile.write(message)
+        print(message, end='')
 
 
 def read_active_addresses(fname):
@@ -42,6 +47,6 @@ def read_active_addresses(fname):
     return addresses
 
 
-addresses = read_active_addresses('./output/active2.txt')
+addresses = read_active_addresses('./output/10k_passwords_active.txt')
 for address in addresses:
     get_address_info(address)

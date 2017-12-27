@@ -7,6 +7,8 @@ import time
 import signal
 import sys
 
+output_prefix = '2151220pwd'
+
 random.seed()
 count = 0
 
@@ -72,12 +74,12 @@ def explore(pkey):
 
     if balance > 0:
         print('BALANCE!!!!!!!!')
-        with open('./output/balances.txt', 'a') as outfile:
+        with open('./output/{}_balances.txt'.format(output_prefix), 'a') as outfile:
             message = 'Address: {} with private key {} has balance: {} sent {} and received {}\n'.format(address.decode('utf-8'), pkey, balance, sent, received)
             outfile.write(message)
         print(message, end='')
     elif sent > 0 or received > 0:
-        with open('./output/active.txt', 'a') as outfile:
+        with open('./output/{}_active.txt'.format(output_prefix), 'a') as outfile:
             # import pdb; pdb.set_trace()
             message = 'Address: {} with private key {} has balance: {} sent {} and received {}\n'.format(address.decode('utf-8'), pkey, balance, sent, received)
             outfile.write(message)
@@ -102,22 +104,34 @@ def signal_handler(signal, frame):
     sys.exit(0)
 
 
-signal.signal(signal.SIGINT, signal_handler)
+# decision = 'random_keys'
+decision = 'readfile'
 
-try:
-    llfile = open('./tmp/lastline.txt', 'r')
-    targetline = int(llfile.read())
-    print('starting from {}'.format(targetline))
-except:
-    targetline = 0
+if decision == 'readfile':
+    signal.signal(signal.SIGINT, signal_handler)
 
+    try:
+        llfile = open('./tmp/lastline.txt', 'r')
+        targetline = int(llfile.read())
+        print('starting from {}'.format(targetline))
+    except:
+        targetline = 0
 
-with open('./data/10_million_password_list_top_100000.txt', 'r') as infile:
-    for line in infile:
-        count += 1
-        if targetline < count:
-            if count % 1000 == 0:
-                print(time.asctime(), ' {} rows checked.'.format(count))
-            explore(line.strip())
+    maxline = 100000000
 
-write_count()
+    with open('./data/2151220-passwords.txt', 'r') as infile:
+        for line in infile:
+            count += 1
+            if targetline < count:
+                if count % 1000 == 0:
+                    print(time.asctime(), ' {} rows checked.'.format(count))
+                explore(line.strip())
+
+            if count > maxline:
+                break
+
+    write_count()
+else:
+    # we start checking random addresses
+    while True:
+        explore(rand_priv_key())
